@@ -1,0 +1,240 @@
+@import 'tailwindcss';
+
+/*
+ * SecureGuard design tokens
+ * -------------------------------------------------------------
+ * Every surface / text / border colour is a CSS variable so the
+ * Theme preference (dark / light + accent colour) can be switched
+ * at runtime by changing data attributes on <html>.
+ * Tailwind utilities such as `bg-surface`, `text-ink`, `border-line`
+ * are generated from the @theme block below.
+ */
+
+@theme inline {
+  --font-sans:
+    'Plus Jakarta Sans Variable', 'Plus Jakarta Sans', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto,
+    sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
+  --color-canvas: var(--sg-canvas);
+  --color-surface: var(--sg-surface);
+  --color-surface-solid: var(--sg-surface-solid);
+  --color-elevated: var(--sg-elevated);
+  --color-elevated-hover: var(--sg-elevated-hover);
+  --color-line: var(--sg-line);
+  --color-line-strong: var(--sg-line-strong);
+  --color-ink: var(--sg-ink);
+  --color-muted: var(--sg-muted);
+  --color-subtle: var(--sg-subtle);
+  --color-primary: var(--sg-primary);
+  --color-primary-soft: var(--sg-primary-soft);
+  --color-accent: var(--sg-accent);
+
+  /* Severity / status colours are fixed across themes */
+  --color-critical: #ef4444;
+  --color-high: #f97316;
+  --color-medium: #eab308;
+  --color-low: #38bdf8;
+  --color-success: #22c55e;
+}
+
+/* ---------- Dark theme (default) ---------- */
+:root,
+[data-theme='dark'] {
+  color-scheme: dark;
+  --sg-canvas: #0b1120;
+  --sg-surface: rgba(17, 26, 46, 0.62);
+  --sg-surface-solid: #111a2e;
+  --sg-elevated: rgba(148, 163, 184, 0.06);
+  --sg-elevated-hover: rgba(148, 163, 184, 0.11);
+  --sg-line: rgba(148, 163, 184, 0.12);
+  --sg-line-strong: rgba(148, 163, 184, 0.22);
+  --sg-ink: #e2e8f0;
+  --sg-muted: #94a3b8;
+  --sg-subtle: #64748b;
+  --sg-glow-1: rgba(59, 130, 246, 0.16);
+  --sg-glow-2: rgba(139, 92, 246, 0.14);
+  --sg-grid: rgba(148, 163, 184, 0.045);
+}
+
+/* ---------- Light theme ---------- */
+[data-theme='light'] {
+  color-scheme: light;
+  --sg-canvas: #eef2f8;
+  --sg-surface: rgba(255, 255, 255, 0.78);
+  --sg-surface-solid: #ffffff;
+  --sg-elevated: rgba(15, 23, 42, 0.04);
+  --sg-elevated-hover: rgba(15, 23, 42, 0.075);
+  --sg-line: rgba(15, 23, 42, 0.09);
+  --sg-line-strong: rgba(15, 23, 42, 0.16);
+  --sg-ink: #0f172a;
+  --sg-muted: #475569;
+  --sg-subtle: #64748b;
+  --sg-glow-1: rgba(59, 130, 246, 0.12);
+  --sg-glow-2: rgba(139, 92, 246, 0.1);
+  --sg-grid: rgba(15, 23, 42, 0.035);
+}
+
+/* ---------- Accent colours ---------- */
+:root,
+[data-accent='blue'] {
+  --sg-primary: #3b82f6;
+  --sg-primary-soft: rgba(59, 130, 246, 0.14);
+  --sg-accent: #8b5cf6;
+}
+[data-accent='violet'] {
+  --sg-primary: #8b5cf6;
+  --sg-primary-soft: rgba(139, 92, 246, 0.15);
+  --sg-accent: #3b82f6;
+}
+[data-accent='cyan'] {
+  --sg-primary: #06b6d4;
+  --sg-primary-soft: rgba(6, 182, 212, 0.14);
+  --sg-accent: #6366f1;
+}
+
+/* ---------- Base ---------- */
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  background-color: var(--sg-canvas);
+  color: var(--sg-ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  /* Soft ambient glows + a faint grid give the "security console" feel */
+  background-image:
+    radial-gradient(900px 500px at 10% -10%, var(--sg-glow-1), transparent 60%),
+    radial-gradient(800px 500px at 100% 0%, var(--sg-glow-2), transparent 60%),
+    linear-gradient(var(--sg-grid) 1px, transparent 1px), linear-gradient(90deg, var(--sg-grid) 1px, transparent 1px);
+  background-size:
+    auto,
+    auto,
+    40px 40px,
+    40px 40px;
+  background-attachment: fixed;
+}
+
+::selection {
+  background: var(--sg-primary-soft);
+}
+
+/* Thin, theme-aware scrollbars */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--sg-line-strong) transparent;
+}
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+*::-webkit-scrollbar-thumb {
+  background: var(--sg-line-strong);
+  border-radius: 999px;
+}
+
+:focus-visible {
+  outline: 2px solid var(--sg-primary);
+  outline-offset: 2px;
+}
+
+/* Recharts: remove the default focus rectangle on click */
+.recharts-wrapper *:focus,
+.recharts-surface:focus {
+  outline: none;
+}
+
+/* ---------- Reusable component classes ---------- */
+@layer components {
+  .glass-card {
+    @apply rounded-2xl border border-line bg-surface backdrop-blur-xl;
+    box-shadow:
+      0 1px 0 0 rgba(255, 255, 255, 0.03) inset,
+      0 10px 30px -12px rgba(2, 6, 23, 0.45);
+  }
+
+  .input-base {
+    @apply w-full rounded-xl border border-line bg-elevated px-3.5 py-2.5 text-sm text-ink placeholder:text-subtle transition outline-none focus:border-primary focus:ring-4 focus:ring-primary-soft;
+  }
+
+  .text-gradient {
+    background-image: linear-gradient(90deg, var(--sg-primary), var(--sg-accent));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+}
+
+/* ---------- Animations ---------- */
+@keyframes sg-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes sg-radar {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes sg-ping {
+  0% {
+    transform: scale(0.6);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(1.8);
+    opacity: 0;
+  }
+}
+@keyframes sg-slide-in {
+  from {
+    opacity: 0;
+    transform: translateX(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.animate-fade-up {
+  animation: sg-fade-up 0.45s ease-out both;
+}
+.animate-radar {
+  animation: sg-radar 2.4s linear infinite;
+}
+.animate-ping-slow {
+  animation: sg-ping 2s ease-out infinite;
+}
+.animate-slide-in {
+  animation: sg-slide-in 0.3s ease-out both;
+}
+
+/* "Animations" theme preference turned off -> disable motion app-wide */
+[data-motion='reduced'] *,
+[data-motion='reduced'] *::before,
+[data-motion='reduced'] *::after {
+  animation-duration: 0.001ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.001ms !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
